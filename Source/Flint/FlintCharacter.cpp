@@ -53,6 +53,8 @@ AFlintCharacter::AFlintCharacter()
 	GetCharacterMovement()->GroundFriction = 3.0f;
 	GetCharacterMovement()->MaxWalkSpeed = 600.0f;
 	GetCharacterMovement()->MaxFlySpeed = 600.0f;
+	GetCharacterMovement()->bUseSeparateBrakingFriction = true;
+	GetCharacterMovement()->BrakingFriction = 5.0f;
 
 	// Lock character motion onto the XZ plane, so the character can't move in or out of the screen
 	GetCharacterMovement()->bConstrainToPlane = true;
@@ -72,6 +74,16 @@ AFlintCharacter::AFlintCharacter()
 	// Enable replication on the Sprite component so animations show up when networked
 	GetSprite()->SetIsReplicated(true);
 	bReplicates = true;
+
+
+	// Set dash speed
+	DashMultiplier = 4.0f;
+
+	// Set dash cooldown
+	bDashCooldown = false;
+
+	// Set the dash cooldown time
+	DashCooldownTime = 2.0f;
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -94,7 +106,7 @@ void AFlintCharacter::Tick(float DeltaSeconds)
 {
 	Super::Tick(DeltaSeconds);
 	
-	UpdateCharacter();	
+	UpdateCharacter();
 }
 
 
@@ -108,6 +120,8 @@ void AFlintCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInp
 	PlayerInputComponent->BindAction("Jump", IE_Released, this, &ACharacter::StopJumping);
 	PlayerInputComponent->BindAxis("MoveRight", this, &AFlintCharacter::MoveRight);
 
+	PlayerInputComponent->BindAction("Dash", IE_Pressed, this, &AFlintCharacter::Dash);
+
 	PlayerInputComponent->BindTouch(IE_Pressed, this, &AFlintCharacter::TouchStarted);
 	PlayerInputComponent->BindTouch(IE_Released, this, &AFlintCharacter::TouchStopped);
 }
@@ -118,6 +132,29 @@ void AFlintCharacter::MoveRight(float Value)
 
 	// Apply the input to the character motion
 	AddMovementInput(FVector(1.0f, 0.0f, 0.0f), Value);
+}
+
+void AFlintCharacter::Dash()
+{
+	//UE_LOG(LogTemp, Warning, TEXT("You tried to dash!"));
+	// Cause the character to suddenly move in the direction it's currently traveling
+	const FVector PlayerVelocity = GetVelocity();
+	const float MaxWalkSpeed = GetCharacterMovement()->MaxWalkSpeed;
+	const float DashSpeed = MaxWalkSpeed * (1.0f + AFlintCharacter::DashMultiplier);
+	const float PlayerDirection = PlayerVelocity.X / fabs(PlayerVelocity.X);
+	const FVector DashImpulse = FVector(PlayerDirection * MaxWalkSpeed * (1.0f + AFlintCharacter::DashMultiplier), 0.0, 0.0);
+	//UE_LOG(LogTemp, Warning, TEXT("You tried to dash like this: %f %f"), MaxWalkSpeed, PlayerDirection)
+
+	UE_LOG(LogTemp, Warning, TEXT("Dash cooldown is: %s"), bDashCooldown ? TEXT("TRUE") : TEXT("FALSE"))
+
+	if (!bDashCooldown)
+	{
+		SetDashCooldown(true);
+		GetCharacterMovement()->AddImpulse(DashImpulse, true);
+		StartDashCooldown();
+	}
+
+
 }
 
 void AFlintCharacter::TouchStarted(const ETouchIndex::Type FingerIndex, const FVector Location)
@@ -151,4 +188,22 @@ void AFlintCharacter::UpdateCharacter()
 			Controller->SetControlRotation(FRotator(0.0f, 0.0f, 0.0f));
 		}
 	}
+}
+
+void AFlintCharacter::SetDashCooldown(bool CooldownState)
+{
+	bDashCooldown = CooldownState;
+}
+
+bool AFlintCharacter::GetDashCooldown()
+{
+	return bDashCooldown;
+}
+
+void AFlintCharacter::StartDashCooldown()
+{
+	bool bDashIsOnCooldown = false;
+	FTimerHandle DashTimerHandle;
+	FTimerDelegate DashTimerDelegate = FTimerDelegate::CreateUObject(this, &AFlintCharacter::SetDashCooldown, bDashIsOnCooldown);
+	GetWorldTimerManager().SetTimer(DashTimerHandle, DashTimerDelegate, DashCooldownTime, false, -1.0f);
 }

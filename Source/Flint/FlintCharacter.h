@@ -38,11 +38,23 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Animations)
 	class UPaperFlipbook* IdleAnimation;
 
+
 	/** Called to choose the correct animation to play based on the character's movement state */
 	void UpdateAnimation();
 
 	/** Called for side to side input */
 	void MoveRight(float Value);
+
+	// Called for sprint input
+	UFUNCTION(BlueprintCallable)
+	void Dash();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float DashMultiplier;
+
+	// How long before dash comes off cooldown
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float DashCooldownTime;
 
 	void UpdateCharacter();
 
@@ -63,4 +75,21 @@ public:
 	FORCEINLINE class UCameraComponent* GetSideViewCameraComponent() const { return SideViewCameraComponent; }
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+
+private:
+
+	// TODO: This is certainly not the best implementation of a cooldown haha
+
+	// Check the cooldown state for dash
+	bool GetDashCooldown();
+
+	// Set the Dash cooldown start time
+	void StartDashCooldown();
+
+	// Set the dash cooldown state
+	void SetDashCooldown(bool CooldownState);
+
+	// The state of the dash cooldown
+	bool bDashCooldown;
+
 };
