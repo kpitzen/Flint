@@ -86,7 +86,7 @@ AFlintCharacter::AFlintCharacter()
 	DashCooldownTime = 2.0f;
 
 	// Set the jump variables
-	MaxJumpCount = 3;
+	MaxJumpCount = 2;
 	CurrentJumpCount = 0;
 	MaxJumpTime = 2.0f;
 }
@@ -232,10 +232,4 @@ bool AFlintCharacter::CanJumpInternal_Implementation() const
 {
 	UE_LOG(LogTemp, Warning, TEXT("Can we jump? %d %d"), CurrentJumpCount, MaxJumpCount)
 	return Super::CanJumpInternal_Implementation() || (CurrentJumpCount < MaxJumpCount && CurrentJumpCount > 0);
-}
-
-void AFlintCharacter::Landed(const FHitResult& Hit)
-{
-	Super::Landed(Hit);
-	CurrentJumpCount = 0;
 }

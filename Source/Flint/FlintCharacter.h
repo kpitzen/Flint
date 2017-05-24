@@ -29,6 +29,15 @@ class AFlintCharacter : public APaperCharacter
 
 	UTextRenderComponent* TextComponent;
 	virtual void Tick(float DeltaSeconds) override;
+
+	virtual void Jump() override;
+
+	virtual void StopJumping() override;
+
+	virtual void Landed(const FHitResult& Hit) override;
+
+	virtual bool CanJumpInternal_Implementation() const override;
+
 protected:
 	// The animation to play while running around
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category=Animations)
@@ -55,6 +64,15 @@ protected:
 	// How long before dash comes off cooldown
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float DashCooldownTime;
+
+
+	// Maximum number of multi-jumps
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	int MaxJumpCount;
+
+	// Maximum jump time
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
+	float MaxJumpTime;
 
 	void UpdateCharacter();
 
@@ -91,5 +109,10 @@ private:
 
 	// The state of the dash cooldown
 	bool bDashCooldown;
+
+
+	// Current number of jumps
+	UPROPERTY()
+	int CurrentJumpCount;
 
 };
