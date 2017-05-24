@@ -30,6 +30,8 @@ class AFlintCharacter : public APaperCharacter
 	UTextRenderComponent* TextComponent;
 	virtual void Tick(float DeltaSeconds) override;
 
+	// Jump function overrides
+
 	virtual void Jump() override;
 
 	virtual void StopJumping() override;
