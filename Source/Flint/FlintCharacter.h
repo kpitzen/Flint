@@ -60,6 +60,7 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void Dash();
 
+	// How fast the dash should be
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Movement")
 	float DashMultiplier;
 
@@ -112,6 +113,17 @@ private:
 	// The state of the dash cooldown
 	bool bDashCooldown;
 
+	// Set the current jump count
+	void SetCurrentJumpCount(int NewJumpCount);
+
+	// Get the current jump count
+	int GetCurrentJumpCount();
+
+	// Set the max jump count
+	void SetMaxJumpCount(int NewMaxJumpCount);
+
+	// Get the max jump count
+	int GetMaxJumpCount();
 
 	// Current number of jumps
 	UPROPERTY()

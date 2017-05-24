@@ -195,15 +195,6 @@ void AFlintCharacter::UpdateCharacter()
 	}
 }
 
-void AFlintCharacter::SetDashCooldown(bool CooldownState)
-{
-	bDashCooldown = CooldownState;
-}
-
-bool AFlintCharacter::GetDashCooldown()
-{
-	return bDashCooldown;
-}
 
 void AFlintCharacter::StartDashCooldown()
 {
@@ -215,10 +206,11 @@ void AFlintCharacter::StartDashCooldown()
 
 void AFlintCharacter::Jump()
 {
+	const int JumpCountNow = GetCurrentJumpCount();
 	UE_LOG(LogTemp, Warning, TEXT("You tried to jump!"))
 	bPressedJump = true;
 	JumpKeyHoldTime = MaxJumpTime;
-	CurrentJumpCount++;
+	SetCurrentJumpCount(JumpCountNow + 1);
 }
 
 void AFlintCharacter::StopJumping()
@@ -239,4 +231,35 @@ void AFlintCharacter::Landed(const FHitResult& Hit)
 	CurrentJumpCount = 0;
 	SetDashCooldown(false);
 	GetWorldTimerManager().ClearTimer(DashTimerHandle);
+}
+
+// Accessor functions
+void AFlintCharacter::SetCurrentJumpCount(int NewJumpCount)
+{
+	CurrentJumpCount = NewJumpCount;
+}
+
+int AFlintCharacter::GetCurrentJumpCount()
+{
+	return CurrentJumpCount;
+}
+
+void AFlintCharacter::SetMaxJumpCount(int NewMaxJumpCount)
+{
+	MaxJumpCount = NewMaxJumpCount;
+}
+
+int AFlintCharacter::GetMaxJumpCount()
+{
+	return MaxJumpCount;
+}
+
+void AFlintCharacter::SetDashCooldown(bool CooldownState)
+{
+	bDashCooldown = CooldownState;
+}
+
+bool AFlintCharacter::GetDashCooldown()
+{
+	return bDashCooldown;
 }
