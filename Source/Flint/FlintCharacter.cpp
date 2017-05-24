@@ -208,7 +208,6 @@ bool AFlintCharacter::GetDashCooldown()
 void AFlintCharacter::StartDashCooldown()
 {
 	bool bDashIsOnCooldown = false;
-	FTimerHandle DashTimerHandle;
 	FTimerDelegate DashTimerDelegate = FTimerDelegate::CreateUObject(this, &AFlintCharacter::SetDashCooldown, bDashIsOnCooldown);
 	GetWorldTimerManager().SetTimer(DashTimerHandle, DashTimerDelegate, DashCooldownTime, false, -1.0f);
 }
@@ -238,4 +237,6 @@ void AFlintCharacter::Landed(const FHitResult& Hit)
 {
 	Super::Landed(Hit);
 	CurrentJumpCount = 0;
+	SetDashCooldown(false);
+	GetWorldTimerManager().ClearTimer(DashTimerHandle);
 }

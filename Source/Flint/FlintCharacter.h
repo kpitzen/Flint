@@ -117,4 +117,7 @@ private:
 	UPROPERTY()
 	int CurrentJumpCount;
 
+	// Handle for the dash cooldown timer
+	FTimerHandle DashTimerHandle;
+
 };
